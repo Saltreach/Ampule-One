@@ -45,17 +45,28 @@ class ProjectAmpuleGUI:
         self.output_area.configure(state=tk.DISABLED)
 
     def _initialize_runtime(self):
-        try:
-            self.retriever = Retriever()
-            self.llm = LocalLLM()
-        except (FileNotFoundError, RuntimeError) as exc:
-            self.status_var.set("Setup required before GUI can answer questions.")
-            self._append_output(f"Setup error: {exc}")
-            self._append_output("Run `python ingest_online.py` and `python ingest.py`, then restart the GUI.")
-            self.submit_button.configure(state=tk.DISABLED)
-            return
+        self.submit_button.configure(state=tk.DISABLED)
+        threading.Thread(target=self._load_runtime, daemon=True).start()
 
+    def _load_runtime(self):
+        try:
+            retriever = Retriever()
+            llm = LocalLLM()
+        except (FileNotFoundError, RuntimeError) as exc:
+            self.root.after(0, self._on_load_error, str(exc))
+            return
+        self.root.after(0, self._on_load_success, retriever, llm)
+
+    def _on_load_error(self, message):
+        self.status_var.set("Setup required before GUI can answer questions.")
+        self._append_output(f"Setup error: {message}")
+        self._append_output("Run `python ingest_online.py` and `python ingest.py`, then restart the GUI.")
+
+    def _on_load_success(self, retriever, llm):
+        self.retriever = retriever
+        self.llm = llm
         self.status_var.set("Ready. Project Ampule is running fully offline.")
+        self.submit_button.configure(state=tk.NORMAL)
 
     def on_submit(self, event=None):
         if self.retriever is None or self.llm is None:
