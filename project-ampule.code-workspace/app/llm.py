@@ -49,19 +49,13 @@ class LocalLLM:
 
     def generate(self, query, context_chunks):
         context = "\n\n".join(context_chunks)
-        prompt = f"""{SYSTEM_PROMPT}
-
-Context:
-{context}
-
-User question:
-{query}
-
-Answer:"""
-        output = self.llm(
-            prompt,
+        messages = [
+            {"role": "system", "content": SYSTEM_PROMPT.strip()},
+            {"role": "user", "content": f"Context:\n{context}\n\nQuestion: {query}"},
+        ]
+        output = self.llm.create_chat_completion(
+            messages=messages,
             max_tokens=LLM_MAX_TOKENS,
             temperature=LLM_TEMPERATURE,
-            stop=["User:"],
         )
-        return output["choices"][0]["text"].strip()
+        return output["choices"][0]["message"]["content"].strip()

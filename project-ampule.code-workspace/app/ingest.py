@@ -80,8 +80,10 @@ def main():
 
     if HAS_FAISS:
         dim = embeddings.shape[1]
-        index = faiss.IndexFlatL2(dim)
-        index.add(embeddings)
+        norms = np.linalg.norm(embeddings, axis=1, keepdims=True).clip(min=1e-12)
+        normed = embeddings / norms
+        index = faiss.IndexFlatIP(dim)
+        index.add(normed)
         faiss.write_index(index, str(INDEX_PATH))
         print("Built FAISS index.")
     else:

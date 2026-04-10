@@ -69,16 +69,16 @@ def add_or_update_document(conn, source_name, text, cache_raw=True):
 
 def main():
     conn = init_db()
+    try:
+        sync_local_documents(conn)
 
-    sync_local_documents(conn)
+        for source_name, text in iter_survival_documents():
+            add_or_update_document(conn, source_name, text)
 
-    for source_name, text in iter_survival_documents():
-        add_or_update_document(conn, source_name, text)
-
-    for source_name, text in iter_medical_wikipedia_documents():
-        add_or_update_document(conn, source_name, text)
-
-    conn.close()
+        for source_name, text in iter_medical_wikipedia_documents():
+            add_or_update_document(conn, source_name, text)
+    finally:
+        conn.close()
 
 if __name__ == "__main__":
     main()

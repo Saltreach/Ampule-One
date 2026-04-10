@@ -44,11 +44,11 @@ class Retriever:
             self.embeddings = _normalize_rows(np.load(EMBEDDINGS_PATH))
 
     def retrieve(self, query):
-        q_emb = self.embedder.encode([query]).astype("float32")
+        q_emb = _normalize_rows(self.embedder.encode([query]).astype("float32"))
         if self.use_faiss:
             _, indices = self.index.search(q_emb, TOP_K)
         else:
-            normalized_query = _normalize_rows(q_emb)
+            normalized_query = q_emb
             scores = self.embeddings @ normalized_query[0]
             top_indices = np.argsort(scores)[-TOP_K:][::-1]
             indices = np.array([top_indices], dtype=int)
