@@ -7,10 +7,12 @@ try:
     from .config import CACHE_DIR, DB_PATH, DOCS_DIR
     from .sources.survival import iter_survival_documents
     from .sources.wikipedia import iter_medical_wikipedia_documents, iter_survival_wikipedia_documents
+    from .sources.kiwix import KIWIX_DIR, HAS_LIBZIM, iter_zim_documents
 except ImportError:
     from config import CACHE_DIR, DB_PATH, DOCS_DIR
     from sources.survival import iter_survival_documents
     from sources.wikipedia import iter_medical_wikipedia_documents, iter_survival_wikipedia_documents
+    from sources.kiwix import KIWIX_DIR, HAS_LIBZIM, iter_zim_documents
 
 DOCS_DIR.mkdir(parents=True, exist_ok=True)
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
@@ -67,10 +69,35 @@ def add_or_update_document(conn, source_name, text, cache_raw=True):
         print(f"Added {source_name}")
     conn.commit()
 
+def _ingest_zim_files(conn):
+    """Process any ZIM files already downloaded to data/kiwix/."""
+    if not KIWIX_DIR.exists():
+        return
+    zim_files = sorted(KIWIX_DIR.glob("*.zim"))
+    if not zim_files:
+        return
+    if not HAS_LIBZIM:
+        print("libzim not installed — skipping ZIM files. "
+              "Install with: pip install libzim")
+        return
+    for zim_path in zim_files:
+        print(f"Indexing ZIM: {zim_path.name}")
+        try:
+            for source_name, text in iter_zim_documents(zim_path):
+                add_or_update_document(conn, source_name, text, cache_raw=False)
+        except Exception as exc:
+            print(f"  Error reading {zim_path.name}: {exc}")
+
+
 def main():
     conn = init_db()
     try:
         sync_local_documents(conn)
+
+        # Kiwix ZIM files (downloaded via download_kiwix.py) take priority —
+        # they are processed first so the Wikipedia API sources below fill in
+        # any gaps for users who skipped the Kiwix download.
+        _ingest_zim_files(conn)
 
         for source_name, text in iter_survival_documents():
             add_or_update_document(conn, source_name, text)
