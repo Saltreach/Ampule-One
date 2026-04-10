@@ -1,55 +1,151 @@
 import requests
 
 MEDICAL_WIKI_PAGES = [
+    # Core first aid
     "First_aid",
     "Cardiopulmonary_resuscitation",
+    "Triage",
+    "Wilderness_first_aid",
+    "Tourniquet",
+    "Splint_(medicine)",
+
+    # Bleeding and circulation
     "Hemorrhage",
-    "Dehydration",
-    "Hypothermia",
-    "Burn",
-    "Fracture",
     "Shock_(circulatory)",
-    "Heat_stroke",
     "Wound",
+    "Wound_infection",
+    "Chest_injury",
+
+    # Trauma
+    "Fracture",
+    "Sprain",
+    "Dislocation_of_joint",
+    "Eye_injury",
+    "Burn",
+
+    # Environmental
+    "Hypothermia",
+    "Frostbite",
+    "Trench_foot",
+    "Heat_stroke",
+    "Heat_exhaustion",
+    "Dehydration",
+    "Altitude_sickness",
+    "Sunburn",
+
+    # Waterborne and infectious
+    "Diarrhea",
+    "Foodborne_illness",
+    "Cholera",
+    "Dysentery",
+    "Giardia",
+    "Wound_infection",
+
+    # Vector and animal-borne
+    "Lyme_disease",
+    "Malaria",
+    "Rabies",
+    "Tetanus",
+    "Snakebite",
+
+    # Emergencies
     "Anaphylaxis",
     "Stroke",
     "Myocardial_infarction",
     "Sepsis",
-    "Snakebite",
-    "Frostbite",
-    "Altitude_sickness",
+    "Appendicitis",
+    "Abdominal_pain",
     "Drowning",
-    "Sprain",
-    "Dislocation_of_joint",
     "Childbirth",
+
+    # Dental and minor
     "Tooth_abscess",
-    "Eye_injury",
-    "Chest_injury",
-    "Wound_infection",
+    "Poisoning",
 ]
 
 SURVIVAL_WIKI_PAGES = [
+    # Foundations
     "Wilderness_survival",
     "Survival_skills",
     "Bushcraft",
+    "Primitive_technology",
+    "Emergency_management",
+
+    # Water
     "Water_purification",
-    "Fire_making",
-    "Navigation",
-    "Foraging",
-    "Food_preservation",
-    "Hunting",
-    "Trapping",
     "Rainwater_harvesting",
     "Solar_still",
-    "Primitive_technology",
-    "Edible_plant",
-    "Emergency_management",
-    "Food_storage",
-    "Knot",
+    "Water_well",
+
+    # Fire
+    "Fire_making",
+    "Bow_drill",
+    "Ferrocerium",
+    "Flint",
+    "Tinder_(flammable_material)",
+
+    # Shelter
+    "Debris_hut",
+    "Snow_shelter",
+    "Bivouac_shelter",
+    "Lean-to",
+
+    # Navigation
+    "Navigation",
     "Compass",
-    "Shelter_(building_and_construction)",
+    "Celestial_navigation",
+    "Dead_reckoning",
+    "Natural_navigation",
+    "Map",
+
+    # Signalling and rescue
+    "Signal_mirror",
+    "Personal_locator_beacon",
+    "Distress_signal",
+
+    # Food procurement
+    "Foraging",
+    "Edible_plant",
+    "Poisonous_plant",
+    "Medicinal_plant",
+    "Hunting",
+    "Trapping",
+    "Deadfall_trap",
+    "Snare_(device)",
+    "Fishing",
+
+    # Food and water storage
+    "Food_preservation",
+    "Food_storage",
+    "Smoking_(cooking)",
+    "Canning",
+    "Fermentation_in_food_processing",
+
+    # Tools and cordage
+    "Knot",
     "Rope",
+    "Paracord",
+    "Axe",
+    "Knife",
+    "Flint_knapping",
+
+    # Environment-specific
+    "Desert_survival",
+    "Arctic_survival",
+    "Maritime_survival_techniques",
+    "Urban_survival",
+
+    # Long-term / extended
+    "Permaculture",
+    "Seed_saving",
+    "Herbal_medicine",
+    "Root_cellar",
+
+    # Hazards
+    "Nuclear_fallout",
+    "Pandemic_preparedness",
 ]
+
 
 def _fetch_page(title):
     url = "https://en.wikipedia.org/w/api.php"
@@ -70,6 +166,10 @@ def _fetch_page(title):
         return None
 
     page = next(iter(pages.values()))
+    # -1 is the Wikipedia API's sentinel for "page not found"
+    if page.get("pageid") == -1:
+        return None
+
     text = page.get("extract", "").strip()
     return text or None
 
@@ -84,6 +184,8 @@ def iter_medical_wikipedia_documents():
 
         if text:
             yield f"wikipedia:{title}", text
+        else:
+            print(f"Skipped (not found): wikipedia:{title}")
 
 
 def iter_survival_wikipedia_documents():
@@ -96,3 +198,5 @@ def iter_survival_wikipedia_documents():
 
         if text:
             yield f"wikipedia:{title}", text
+        else:
+            print(f"Skipped (not found): wikipedia:{title}")
