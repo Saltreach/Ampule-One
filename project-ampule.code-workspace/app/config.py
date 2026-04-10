@@ -19,11 +19,14 @@ TOP_K = 4
 
 RECOMMENDED_MODEL = "Qwen2.5-1.5B-Instruct GGUF (Q4_K_M)"
 
-# Pi-friendly defaults for faster local inference.
-LLM_N_CTX = 1024
-LLM_N_THREADS = 2
-LLM_N_BATCH = 128
-LLM_MAX_TOKENS = 180
+# Inference settings.
+# These defaults target a modern PC or an Orange Pi 5 with 4 GB+ RAM.
+# For a Raspberry Pi 3/4 or other constrained device, reduce
+# LLM_N_CTX to 1024, LLM_MAX_TOKENS to 180, and LLM_N_THREADS to 2.
+LLM_N_CTX = 2048
+LLM_N_THREADS = 4
+LLM_N_BATCH = 256
+LLM_MAX_TOKENS = 512
 LLM_TEMPERATURE = 0.2
 LLM_USE_MMAP = True
 LLM_USE_MLOCK = False
