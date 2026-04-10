@@ -3,9 +3,11 @@ import tkinter as tk
 import tkinter.font as tkfont
 
 try:
+    from .config import SYSTEM_RAM_GB, MODEL_LABEL, RECOMMENDED_MODEL
     from .llm import LocalLLM
     from .rag import Retriever
 except ImportError:
+    from config import SYSTEM_RAM_GB, MODEL_LABEL, RECOMMENDED_MODEL
     from llm import LocalLLM
     from rag import Retriever
 
@@ -247,7 +249,10 @@ class ProjectAmpuleGUI:
     def _on_load_success(self, retriever, llm):
         self.retriever = retriever
         self.llm = llm
-        self._set_status("Ready — running fully offline", DOT_READY)
+        ram_str = f"{SYSTEM_RAM_GB:.1f} GB RAM"
+        self._set_status(
+            f"Ready · {ram_str} · {MODEL_LABEL} · offline", DOT_READY
+        )
         self.submit_button.configure(state=tk.NORMAL)
         self.question_entry.focus_set()
 
@@ -280,7 +285,10 @@ class ProjectAmpuleGUI:
 
     def _handle_result(self, answer, is_error):
         self._add_answer(answer, is_error)
-        self._set_status("Ready — running fully offline", DOT_READY)
+        ram_str = f"{SYSTEM_RAM_GB:.1f} GB RAM"
+        self._set_status(
+            f"Ready · {ram_str} · {MODEL_LABEL} · offline", DOT_READY
+        )
         self.submit_button.configure(state=tk.NORMAL)
         self.question_entry.focus_set()
 
