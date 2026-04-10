@@ -1,0 +1,1 @@
+"""Project Ampule application package."""
