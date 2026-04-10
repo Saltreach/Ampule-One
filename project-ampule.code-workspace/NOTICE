@@ -1,0 +1,10 @@
+Project Ampule
+Copyright 2026 Saltreach
+
+This project is a spin-off of Project NOMAD, created by Crosstalk Solutions.
+  https://github.com/Crosstalk-Solutions/project-nomad
+
+Project NOMAD provided the original concept of an offline-first, local LLM
+survival assistant. Project Ampule extends that idea with a RAG pipeline,
+curated knowledge ingestion, and support for small ARM devices such as
+Orange Pi and Raspberry Pi.

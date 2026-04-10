@@ -30,10 +30,10 @@ except ImportError:
 
 class LocalLLM:
     def __init__(self):
-        if not MODEL_PATH.exists():
+        if not MODEL_PATH.exists() or MODEL_PATH.stat().st_size == 0:
             raise FileNotFoundError(
-                f"Model file not found at {MODEL_PATH}. "
-                f"Recommended model: {RECOMMENDED_MODEL}."
+                f"Model file not found or empty at {MODEL_PATH}. "
+                f"Download the recommended model: {RECOMMENDED_MODEL}."
             )
 
         self.llm = Llama(

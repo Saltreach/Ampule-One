@@ -1,6 +1,8 @@
 # Project Ampule
 
-Project Ampule is a non-browser, offline-first survival assistant inspired by Project NOMAD. It runs locally as a CLI or Tkinter GUI app, syncs online sources into local storage, builds a FAISS index when available, and falls back to NumPy cosine retrieval when FAISS is unavailable.
+Project Ampule is a spin-off of [Project NOMAD](https://github.com/Crosstalk-Solutions/project-nomad) by Crosstalk Solutions. Credit and thanks to the original project for the concept of an offline-first, local LLM survival assistant.
+
+Project Ampule extends that foundation with a full RAG pipeline, curated knowledge ingestion from Wikipedia and Ready.gov, and tuned support for small ARM devices such as Orange Pi and Raspberry Pi. It runs locally as a CLI or Tkinter GUI app with no internet connection required at runtime.
 
 ## Recommended Model
 
@@ -67,3 +69,11 @@ Use Qwen2.5 1.5B Instruct in GGUF format with Q4_K_M quantization. Place the fil
 ## Device Notes
 
 Project Ampule is optimized for small ARM devices such as Orange Pi and Raspberry Pi, but response speed still depends heavily on your GGUF model choice and available RAM.
+
+## License
+
+Copyright 2026 Saltreach. Licensed under the [Apache License, Version 2.0](LICENSE).
+
+## Acknowledgements
+
+Project Ampule is a spin-off of [Project NOMAD](https://github.com/Crosstalk-Solutions/project-nomad) by Crosstalk Solutions, which provided the original concept. See [NOTICE](NOTICE) for full attribution.
