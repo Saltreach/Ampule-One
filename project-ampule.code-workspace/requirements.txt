@@ -1,7 +1,8 @@
-faiss-cpu
 sentence-transformers
 llama-cpp-python
 numpy
 requests
-PyPDF2
 beautifulsoup4
+# faiss-cpu is optional — install separately if available for your platform.
+# If it is not installed, Project Ampule falls back to NumPy cosine retrieval.
+# pip install faiss-cpu

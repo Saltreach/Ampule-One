@@ -6,11 +6,11 @@ from datetime import datetime
 try:
     from .config import CACHE_DIR, DB_PATH, DOCS_DIR
     from .sources.survival import iter_survival_documents
-    from .sources.wikipedia import iter_medical_wikipedia_documents
+    from .sources.wikipedia import iter_medical_wikipedia_documents, iter_survival_wikipedia_documents
 except ImportError:
     from config import CACHE_DIR, DB_PATH, DOCS_DIR
     from sources.survival import iter_survival_documents
-    from sources.wikipedia import iter_medical_wikipedia_documents
+    from sources.wikipedia import iter_medical_wikipedia_documents, iter_survival_wikipedia_documents
 
 DOCS_DIR.mkdir(parents=True, exist_ok=True)
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
@@ -76,6 +76,9 @@ def main():
             add_or_update_document(conn, source_name, text)
 
         for source_name, text in iter_medical_wikipedia_documents():
+            add_or_update_document(conn, source_name, text)
+
+        for source_name, text in iter_survival_wikipedia_documents():
             add_or_update_document(conn, source_name, text)
     finally:
         conn.close()
