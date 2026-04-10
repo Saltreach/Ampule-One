@@ -48,7 +48,7 @@ def sync_local_documents(conn):
         if text:
             add_or_update_document(conn, f"local:{path.name}", text, cache_raw=False)
 
-def add_or_update_document(conn, source_name, text, cache_raw=True):
+def add_or_update_document(conn, source_name, text, cache_raw=True, commit=True):
     h = hash_text(text)
     if cache_raw:
         write_raw_cache(source_name, text)
@@ -67,7 +67,10 @@ def add_or_update_document(conn, source_name, text, cache_raw=True):
         cur.execute("INSERT INTO documents (source, content, hash) VALUES (?, ?, ?)",
                     (source_name, text, h))
         print(f"Added {source_name}")
-    conn.commit()
+    if commit:
+        conn.commit()
+
+_ZIM_BATCH = 500   # commit to SQLite every N articles during ZIM ingestion
 
 def _ingest_zim_files(conn):
     """Process any ZIM files already downloaded to data/kiwix/."""
@@ -82,10 +85,19 @@ def _ingest_zim_files(conn):
         return
     for zim_path in zim_files:
         print(f"Indexing ZIM: {zim_path.name}")
+        n = 0
         try:
             for source_name, text in iter_zim_documents(zim_path):
-                add_or_update_document(conn, source_name, text, cache_raw=False)
+                add_or_update_document(conn, source_name, text,
+                                       cache_raw=False, commit=False)
+                n += 1
+                if n % _ZIM_BATCH == 0:
+                    conn.commit()
+                    print(f"  {n} articles indexed…", end="\r")
+            conn.commit()
+            print(f"  {n} articles indexed from {zim_path.name}.")
         except Exception as exc:
+            conn.commit()   # save whatever completed before the error
             print(f"  Error reading {zim_path.name}: {exc}")
 
 

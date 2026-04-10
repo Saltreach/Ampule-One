@@ -22,13 +22,10 @@ except ImportError:
     Archive = None
     HAS_LIBZIM = False
 
-try:
-    from .config import DATA_DIR
-except ImportError:
-    from config import DATA_DIR
-
 # ── Paths ─────────────────────────────────────────────────────────────────────
-KIWIX_DIR = DATA_DIR / "kiwix"
+# Resolved from this file's location: app/sources/kiwix.py → 3 levels up = project root
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+KIWIX_DIR = _PROJECT_ROOT / "data" / "kiwix"
 
 # ── Kiwix OPDS catalog ────────────────────────────────────────────────────────
 CATALOG_URL = "https://library.kiwix.org/catalog/v2/entries"
@@ -188,22 +185,12 @@ def _html_to_text(html_bytes):
 
 
 def _iter_archive(archive):
-    """
-    Yield non-redirect entries from a libzim Archive, handling
-    minor API differences across libzim versions.
-    """
+    """Yield non-redirect entries from a libzim Archive."""
     total = getattr(archive, "all_entry_count", None) \
             or getattr(archive, "entry_count", 0)
-
     for i in range(total):
         try:
-            # libzim >= 3.x exposes indexing via __getitem__ on some builds;
-            # fall back to the internal _get_entry_by_id on others.
-            try:
-                entry = archive[i]
-            except TypeError:
-                entry = archive._get_entry_by_id(i)
-
+            entry = archive._get_entry_by_id(i)
             if not entry.is_redirect:
                 yield entry
         except Exception:
