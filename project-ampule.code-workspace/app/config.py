@@ -68,6 +68,19 @@ _MODEL_TIERS = [
         "n_batch":     512,
         "max_tokens":  1024,
     },
+    # Ternary Bonsai 8B uses ~1.58-bit weights (~2 GB model size) so an 8B
+    # architecture fits into 6 GB — preferred over standard 3B when present.
+    # Expected filename: ternary-bonsai-8b.gguf  (verify against your download)
+    {
+        "min_ram_gb":  6,
+        "model_file":  "ternary-bonsai-8b.gguf",
+        "recommended": "Ternary Bonsai 8B (1.58-bit)",
+        "label":       "Low-Mid — Bonsai 8B ternary",
+        "n_ctx":       4096,
+        "n_threads":   6,
+        "n_batch":     512,
+        "max_tokens":  1024,
+    },
     {
         "min_ram_gb":  6,
         "model_file":  "qwen2.5-3b-instruct-q4_k_m.gguf",
